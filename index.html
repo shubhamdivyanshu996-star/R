@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>For R 💌</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: "Segoe UI", sans-serif;
+
+    background: linear-gradient(
+        135deg,
+        #ffe1eb,
+        #f2e4ff,
+        #e4f0ff
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #574957;
+}
+
+.float {
+    position: fixed;
+    bottom: -50px;
+    font-size: 23px;
+    opacity: 0;
+    pointer-events: none;
+    animation: floatUp 8s linear infinite;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: .75;
+    }
+
+    100% {
+        transform: translateY(-110vh) rotate(30deg);
+        opacity: 0;
+    }
+}
+
+.container {
+    width: 92%;
+    max-width: 440px;
+    text-align: center;
+}
+
+.music-btn {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 50;
+
+    border: none;
+    border-radius: 25px;
+    padding: 10px 15px;
+
+    background: rgba(255,255,255,.92);
+    color: #b05b82;
+
+    font-size: 14px;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+
+    cursor: pointer;
+}
+
+.envelope {
+    width: 285px;
+    height: 185px;
+    margin: auto;
+
+    position: relative;
+
+    background: #e59ab5;
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    box-shadow: 0 18px 40px rgba(0,0,0,.18);
+
+    transition: .4s;
+}
+
+.envelope:hover {
+    transform: scale(1.04);
+}
+
+.envelope::before {
+    content: "";
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    border-left: 142px solid transparent;
+    border-right: 142px solid transparent;
+    border-bottom: 105px solid #d982a1;
+
+    z-index: 2;
+}
+
+.flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border-left: 142px solid transparent;
+    border-right: 142px solid transparent;
+    border-top: 100px solid #cc718f;
+
+    transform-origin: top;
+    transition: .8s;
+
+    z-index: 5;
+}
+
+.envelope.open .flap {
+    transform: rotateX(180deg);
+}
+
+.envelope-text {
+    position: absolute;
+    width: 100%;
+    bottom: 32px;
+
+    z-index: 4;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    color: #6e3048;
+}
+
+.open-text {
+    margin-top: 20px;
+    color: #87516a;
+    font-size: 15px;
+}
+
+.letter {
+    display: none;
+
+    background: rgba(255,255,255,.97);
+
+    padding: 25px 22px;
+
+    border-radius: 23px;
+
+    box-shadow: 0 18px 45px rgba(0,0,0,.16);
+
+    animation: appear .7s ease;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.slide {
+    display: none;
+    min-height: 315px;
+}
+
+.slide.active {
+    display: block;
+    animation: slideIn .45s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.big {
+    font-size: 50px;
+    margin: 5px;
+}
+
+h1 {
+    color: #bd5c83;
+    font-size: 30px;
+}
+
+h2 {
+    color: #bd5c83;
+}
+
+p {
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.highlight {
+    color: #bd5c83;
+    font-weight: bold;
+}
+
+.final {
+    font-size: 19px;
+    color: #8d4b68;
+    font-weight: 600;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.nav-btn {
+    border: none;
+    padding: 11px 18px;
+
+    border-radius: 25px;
+
+    background: #c96f94;
+    color: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: .25s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.06);
+}
+
+.nav-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.counter {
+    font-size: 13px;
+    color: #999;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<button
+    class="music-btn"
+    id="musicBtn"
+    onclick="toggleMusic()">
+    🎵 Play
+</button>
+
+
+<!-- Floating decorations -->
+
+<div class="float" style="left:7%; animation-delay:0s;">💗</div>
+<div class="float" style="left:20%; animation-delay:2s;">✨</div>
+<div class="float" style="left:38%; animation-delay:4s;">🌸</div>
+<div class="float" style="left:57%; animation-delay:1s;">💕</div>
+<div class="float" style="left:75%; animation-delay:3s;">✨</div>
+<div class="float" style="left:90%; animation-delay:5s;">🌷</div>
+
+
+<div class="container">
+
+    <!-- Envelope -->
+
+    <div
+        class="envelope"
+        id="envelope"
+        onclick="openLetter()">
+
+        <div class="flap"></div>
+
+        <div class="envelope-text">
+            For R 💌
+        </div>
+
+    </div>
+
+    <div
+        class="open-text"
+        id="openText">
+
+        Tap the envelope ✨
+
+    </div>
+
+
+    <!-- Letter -->
+
+    <div
+        class="letter"
+        id="letter">
+
+
+        <!-- Slide 1 -->
+
+        <div class="slide active">
+
+            <div class="big">💌</div>
+
+            <h1>
+                Hey, R...
+            </h1>
+
+            <p>
+
+                There's something I've been
+                meaning to say properly.
+
+                <br><br>
+
+                And for once, I'll try not to
+                turn it into another piece
+                of my endless bakwaas. 😭
+
+                <br><br>
+
+                <span class="highlight">
+                    Thank you. ❤️
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 2 -->
+
+        <div class="slide">
+
+            <div class="big">😭</div>
+
+            <h2>
+                Thank you for listening
+            </h2>
+
+            <p>
+
+                Thank you for listening to
+                my random stories...
+
+                <br>
+
+                My unnecessary thoughts...
+
+                <br>
+
+                My overthinking...
+
+                <br>
+
+                And obviously...
+
+                <br>
+
+                my never-ending
+                <b>bakwaas.</b> 😭
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 3 -->
+
+        <div class="slide">
+
+            <div class="big">🫶</div>
+
+            <h2>
+                But what means the most...
+            </h2>
+
+            <p>
+
+                You weren't exactly having
+                the easiest time yourself.
+
+                <br><br>
+
+                You had your own problems,
+                your own thoughts,
+                and your own things to deal with.
+
+                <br><br>
+
+                Yet you still took the time
+                to listen to me.
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 4 -->
+
+        <div class="slide">
+
+            <div class="big">🤍</div>
+
+            <h2>
+                You didn't have to
+            </h2>
+
+            <p>
+
+                You could've easily said,
+
+                <br>
+
+                "I have my own problems
+                right now."
+
+                <br><br>
+
+                And I would've understood.
+
+                <br><br>
+
+                But you didn't.
+
+                <br>
+
+                You stayed.
+
+                <br>
+
+                You listened.
+
+                <br><br>
+
+                <span class="highlight">
+                    And I'll never take that
+                    for granted.
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 5 -->
+
+        <div class="slide">
+
+            <div class="big">🌸</div>
+
+            <h2>
+                Sometimes, listening is enough
+            </h2>
+
+            <p>
+
+                Sometimes a person doesn't
+                need advice.
+
+                <br><br>
+
+                They don't need someone
+                to solve everything.
+
+                <br><br>
+
+                They just need someone who
+                listens without making them
+                feel like a burden.
+
+                <br><br>
+
+                And you did that for me.
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 6 -->
+
+        <div class="slide">
+
+            <div class="big">✨</div>
+
+            <h2>
+                So thank you...
+            </h2>
+
+            <p>
+
+                Thank you for your patience.
+
+                <br>
+
+                Thank you for hearing me out.
+
+                <br>
+
+                Thank you for putting up
+                with my nonsense.
+
+                <br><br>
+
+                And especially for listening
+                when you were already carrying
+                things of your own.
+
+                <br><br>
+
+                <span class="highlight">
+                    That means a lot to me.
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 7 -->
+
+        <div class="slide">
+
+            <div class="big">💗</div>
+
+            <p class="final">
+
+                And please remember...
+
+                <br><br>
+
+                You don't always have to be
+                the person who listens.
+
+                <br><br>
+
+                Your problems matter.
+
+                <br>
+
+                Your feelings matter.
+
+                <br>
+
+                And you deserve someone who
+                listens to you too.
+
+                <br><br>
+
+                So whenever you need to talk...
+
+                <br><br>
+
+                <span class="highlight">
+                    I'll listen too. 🤍
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <!-- Slide 8 -->
+
+        <div class="slide">
+
+            <div class="big">🌷</div>
+
+            <h2>
+                Thank you, R. ❤️
+            </h2>
+
+            <p>
+
+                Thank you for making space
+                for my chaos while dealing
+                with some of your own.
+
+                <br><br>
+
+                Thank you for being patient.
+
+                <br>
+
+                Thank you for listening.
+
+                <br>
+
+                Thank you for being there.
+
+                <br><br>
+
+                And most importantly...
+
+                <br><br>
+
+                <span class="highlight">
+                    Thank you for being you. 🫶
+                </span>
+
+                <br><br>
+
+                I genuinely appreciate you
+                more than I probably say.
+
+            </p>
+
+        </div>
+
+
+        <!-- Navigation -->
+
+        <div class="navigation">
+
+            <button
+                class="nav-btn"
+                id="prevBtn"
+                onclick="previousSlide()"
+                disabled>
+
+                ← Previous
+
+            </button>
+
+            <span
+                class="counter"
+                id="counter">
+
+                1 / 8
+
+            </span>
+
+            <button
+                class="nav-btn"
+                id="nextBtn"
+                onclick="nextSlide()">
+
+                Next →
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* Music */
+
+const music =
+    document.getElementById("music");
+
+const musicBtn =
+    document.getElementById("musicBtn");
+
+let musicStarted = false;
+
+
+function updateMusicButton() {
+
+    if (music.paused) {
+
+        musicBtn.textContent =
+            "🎵 Play";
+
+    } else {
+
+        musicBtn.textContent =
+            "⏸️ Pause";
+
+    }
+
+}
+
+
+function startMusic() {
+
+    music.volume = 0.65;
+
+    music.play()
+        .then(() => {
+
+            updateMusicButton();
+
+        })
+        .catch(() => {
+
+            musicBtn.textContent =
+                "🎵 Play";
+
+        });
+
+}
+
+
+function toggleMusic() {
+
+    if (music.paused) {
+
+        music.play()
+            .then(() => {
+
+                updateMusicButton();
+
+            })
+            .catch(() => {
+
+                alert(
+                    "Make sure song.mp3 is in the same folder as index.html."
+                );
+
+            });
+
+    } else {
+
+        music.pause();
+
+        updateMusicButton();
+
+    }
+
+}
+
+
+/* Open envelope */
+
+function openLetter() {
+
+    const envelope =
+        document.getElementById("envelope");
+
+    const letter =
+        document.getElementById("letter");
+
+    const openText =
+        document.getElementById("openText");
+
+
+    envelope.classList.add("open");
+
+
+    if (!musicStarted) {
+
+        startMusic();
+
+        musicStarted = true;
+
+    }
+
+
+    setTimeout(() => {
+
+        envelope.style.display = "none";
+
+        openText.style.display = "none";
+
+        letter.style.display = "block";
+
+    }, 800);
+
+}
+
+
+/* Slides */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const prevBtn =
+    document.getElementById("prevBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const counter =
+    document.getElementById("counter");
+
+
+function showSlide(index) {
+
+    slides.forEach(slide => {
+
+        slide.classList.remove("active");
+
+    });
+
+
+    slides[index].classList.add("active");
+
+
+    counter.textContent =
+        (index + 1) +
+        " / " +
+        slides.length;
+
+
+    prevBtn.disabled =
+        index === 0;
+
+    nextBtn.disabled =
+        index === slides.length - 1;
+
+}
+
+
+function nextSlide() {
+
+    if (currentSlide < slides.length - 1) {
+
+        currentSlide++;
+
+        showSlide(currentSlide);
+
+    }
+
+}
+
+
+function previousSlide() {
+
+    if (currentSlide > 0) {
+
+        currentSlide--;
+
+        showSlide(currentSlide);
+
+    }
+
+}
+
+
+/* Keyboard */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "ArrowRight") {
+            nextSlide();
+        }
+
+        if (event.key === "ArrowLeft") {
+            previousSlide();
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
